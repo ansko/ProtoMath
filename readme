@@ -1,0 +1,7 @@
+This is a prototype of my module for simple mathematical (mainly geometrical) operations.
+
+
+Plans:
+   -- add to every primitive method calculating distance to every other primitive
+   -- more inits
+   -- tests
