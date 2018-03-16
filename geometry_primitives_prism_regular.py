@@ -17,3 +17,6 @@ class PrismRegular:
     def init_topbottom(self, top_facet, bot_facet):
         self.top_facet = top_facet
         self.bot_facet = bot_facet
+        tfc = self.top_facet.center
+        bfc = self.bot_facet.center
+        self.height = tfc.distance_to_point(bfc)

@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 
 
-from geometry_primitives_line import Line                      # +
-from geometry_primitives_plane import Plane                    # +
-from geometry_primitives_point import Point                    # +
-from geometry_primitives_polygon_regular import PolygonRegular # -
-from geometry_primitives_prism_regular import PrismRegular     # -
-from geometry_primitives_segment import Segment                # +
+from geometry_primitives_line import Line
+from geometry_primitives_plane import Plane
+from geometry_primitives_point import Point
+from geometry_primitives_polygon_regular import PolygonRegular
+from geometry_primitives_prism_regular import PrismRegular
+from geometry_primitives_segment import Segment
 
-from linalg_matrix2 import Matrix2 # +
-from linalg_matrix3 import Matrix3 # +
-from linalg_matrix4 import Matrix4 # +
-from linalg_vector import Vector   # +
+from linalg_matrix2 import Matrix2
+from linalg_matrix3 import Matrix3
+from linalg_matrix4 import Matrix4
+from linalg_vector import Vector
 
 
 print('imports ok')

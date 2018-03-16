@@ -44,5 +44,5 @@ class Matrix3:
         minor12 = self.a21 * self.a33 - self.a23 * self.a31
         minor13 = self.a21 * self.a32 - self.a22 * self.a31
         return (self.a11 * minor11 -
-                self.a21 * minor12 +
-                self.a31 * minor13)
+                self.a12 * minor12 +
+                self.a13 * minor13)
