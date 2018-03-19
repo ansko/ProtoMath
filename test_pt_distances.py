@@ -39,7 +39,7 @@ def test_distance_segment():
     pt0 = Point(0, 0, 0)
     pt1 = Point(-1, 1, 1)
     pt2 = Point(1, 1, 1)
-    print(pt0.distance_to_segment(Segment(beg=pt1, end=pt2)))
+    print(pt0.distance_to_segment(Segment(pt_1=pt1, pt_2=pt2)))
 
 def test_distance_plane():
     print('pt-plane')

@@ -137,8 +137,8 @@ class Point:
         """
         pt0 = self
         if not segment is None:
-            pt1 = segment.beg
-            pt2 = segment.end
+            pt1 = segment.pt_1
+            pt2 = segment.pt_2
         elif not None in (pt_beg, pt_end):
             pt1 = pt_beg
             pt2 = pt_end
@@ -156,8 +156,11 @@ class Point:
         height = self.__implementation_distance_to_line(pt_1=pt1, pt_2=pt2)
         return height
 
-    def distance_to_plane(self, plane):
-        return self.__implementation_distance_to_plane(plane=plane)
+    def distance_to_plane(self,
+                          plane=None,
+                          pt_1=None, pt_2=None, pt_3=None):
+        return self.__implementation_distance_to_plane(plane=plane,
+                   pt_1=pt_1, pt_2=pt_2, pt_3=pt_3)
 
     def __implementation_distance_to_plane(self,
                                            plane=None,
@@ -207,8 +210,12 @@ class Point:
     def distance_to_polygon_regular(self, polygon):
         return self.distance_to_polygon(polygon)
 
-    def distance_to_polygon(self, polygon):
-        return self.__implementation_distance_to_polygon(polygon=polygon)
+    def distance_to_polygon(self,
+                            polygon=None,
+                            polygon_vertices=None):
+        return self.__implementation_distance_to_polygon(
+                   polygon=polygon,
+                   vertices=polygon_vertices)
 
     def __implementation_distance_to_polygon(self,
                                              polygon=None,
@@ -221,7 +228,7 @@ class Point:
             distance to the plane containing poly. It happens if the prism
             with top and bot equal to the poly translated to the vector vec,
             which is perpendicular to poly and has length equal to the distance to
-            the plane contains point.
+            the plane, contains point.
             Otherwise the distance to the polygon is found by Pythagoras theorem:
             a = the smallest of the diatances to the segments forming prisms's
                 top and bottom
@@ -229,13 +236,14 @@ class Point:
             c = (a**2 + b**2)**0.5 - distance of interest
         """
         if not polygon is None:
-            distance_to_plane = self.distance_to_plane(polygon.containing_plane)
-            #print('here ', distance_to_plane)
+            distance_to_plane = self.distance_to_plane(
+                                    plane=polygon.containing_plane)
             polygon_center_x = polygon.center.x
             polygon_center_y = polygon.center.y
             polygon_center_z = polygon.center.z
             vertex0 = polygon.vertices[0]
             vertex1 = polygon.vertices[1]
+            # FIXME - why these coords? they seem to be incorrect!!!
             vec = Vector(x=polygon_center_x - self.x,
                          y=polygon_center_y - self.y,
                          z=polygon_center_z - self.z)
@@ -264,8 +272,9 @@ class Point:
             top_facet_vertices = [vertex.translated(vec) for vertex in vertices]
             bot_facet_vertices = [vertex.translated(-vec) for vertex in vertices]
         else:
-            print('error in __implementation_distance_to_polygon:',
+            print('error in point.__implementation_distance_to_polygon:',
                   'incorrect arguments')
+            print(polygon, vertices)
             return 0
         # FIXME - remove hardcoded constant
         if distance_to_plane < 0.001:
@@ -284,30 +293,6 @@ class Point:
                 top_facet_vertices=top_facet_vertices,
                 bot_facet_vertices=bot_facet_vertices):
             return distance_to_plane
-        """
-        distance_to_segment = self.__implementation_distance_to_segment(
-            pt_beg=top_facet_vertices[0],
-            pt_end=top_facet_vertices[1]) # start value
-        for i, vertex in enumerate(top_facet_vertices):
-            if i == 0:
-                j = 1
-            else:
-                j = i - 1
-            distance_to_segment = min(distance_to_segment, 
-                                      self.__implementation_distance_to_segment(
-                                          pt_beg=vertex, 
-                                          pt_end=top_facet_vertices[j]
-                                          )
-                                      )
-        for i, vertex in enumerate(bot_facet_vertices):
-            if i == 0:
-                j = 1
-            else:
-                j = i - 1
-            distance_to_segment = min(distance_to_segment,
-                self.__implementation_distance_to_segment(pt_beg=vertex,
-                    pt_end=bot_facet_vertices[j]))
-        """
         distance_to_segment = self.__implementation_distance_to_segment(
             pt_beg=vertices[0],
             pt_end=vertices[1]) # start value
@@ -349,7 +334,7 @@ class Point:
                                                      bot_facet=bot_facet):
                 return 0
         else:
-            print('error in __implementation_distance_to_prism:',
+            print('error in point.__implementation_distance_to_prism:',
                   'incorrect arguments')
             return None
         # TODO check that top and bottom vertices with same indices correspond
@@ -375,8 +360,14 @@ class Point:
     """
         Methods to check whether the point is inside other primitive.
     """
-    def is_inside_prism(self, prism):
-       return self.__implementation_is_inside_prism(prism=prism)
+    def is_inside_prism(self,
+                        prism=None, 
+                        top_facet=None, bot_facet=None,
+                        top_facet_vertices=None, bot_facet_vertices=None):
+       return self.__implementation_is_inside_prism(prism=prism,
+                          top_facet=top_facet, bot_facet=bot_facet, 
+                          top_facet_vertices=top_facet_vertices,
+                          bot_facet_vertices=bot_facet_vertices)
 
     def __implementation_is_inside_prism(self,
             prism=None,
@@ -400,8 +391,8 @@ class Point:
            height = prism.height
            top_plane = top_facet.containing_plane
            bot_plane = bot_facet.containing_plane
-           distance_top_plane = self.distance_to_plane(top_plane)
-           distance_bot_plane = self.distance_to_plane(bot_plane)
+           distance_top_plane = self.distance_to_plane(plane=top_plane)
+           distance_bot_plane = self.distance_to_plane(plane=bot_plane)
            if abs(distance_top_plane + distance_bot_plane - height) > 0.001:
                return False
            volume_prism = height * facet_area
@@ -431,9 +422,8 @@ class Point:
            facet_edge_length = top_facet.edge_length
            top_plane = top_facet.containing_plane
            bot_plane = bot_facet.containing_plane
-           distance_top_plane = self.distance_to_plane(top_plane)
-           distance_bot_plane = self.distance_to_plane(bot_plane)
-           print('\n\n\n', distance_top_plane, distance_bot_plane, height)
+           distance_top_plane = self.distance_to_plane(plane=top_plane)
+           distance_bot_plane = self.distance_to_plane(plane=bot_plane)
            # FIXME - remove hardcoded constant
            if abs(distance_top_plane + distance_bot_plane - height) > 0.001:
                return False

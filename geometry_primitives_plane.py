@@ -121,5 +121,21 @@ class Plane:
         self.init_3pts(pt, segment.beg, segment.end)
 
 
+    """
+        Some properties of the defined plane.
+    """
     def normal(self):
+        """
+            Return normal to the plane.
+        """
         return Vector(self.a, self.b, self.c)
+
+    def get_semispace(self, pt):
+        """
+            The sign of the return value defines the semispace
+            where does defined point lie. It is useful from the
+            understanding whether some segment crosses the plane.
+            (if does, the return values for its ends will have
+            different signs).
+        """
+        return self.a * pt.x + self.b * pt.y + self.c * pt.z + self.d
