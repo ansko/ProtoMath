@@ -55,6 +55,7 @@ class Segment:
         if line is not None:
             vecCD = Vector(pt_1=line.origin,
                            pt_2=line.origin.translated(line.parallel_vector))
+            ptD = pt_2=line.origin.translated(line.parallel_vector)
             line_origin_x = line.origin.x
             line_origin_y = line.origin.y
             line_origin_z = line.origin.z
@@ -63,6 +64,17 @@ class Segment:
             line_origin_x = pt_1.x
             line_origin_y = pt_1.y
             line_origin_z = pt_1.z
+            ptD = pt_2
+        # check if line and segment are parallel
+        param = abs(vecAB.product_with(vecCD) / vecAB.length() / vecCD.length())
+        if abs(param - 1) < 0.001:
+            vecAD = Vector(pt_1=self.pt_1, pt_2=ptD)
+            cos_angle_A = (vecAD.product_with(vecAB) /
+                           vecAB.length() /
+                           vecAD.length())
+            sin_angle_A = (1 - cos_angle_A**2)**0.5
+            return vecAD.length() * sin_angle_A
+        # lines are not parallel
         c11 = -vecAB.length()**2
         c12 = vecAB.product_with(vecCD)
         c22 = vecCD.length()**2
