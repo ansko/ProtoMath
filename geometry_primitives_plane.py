@@ -139,3 +139,43 @@ class Plane:
             different signs).
         """
         return self.a * pt.x + self.b * pt.y + self.c * pt.z + self.d
+
+
+    """
+        Methods to calculate distances to other primitives.
+    """
+    def distance_to_point(self, point):
+        return point.distance_to_plane(self)
+
+    def distance_to_line(self, line):
+        return line.distance_to_plane(self)
+
+    def distance_to_segment(self, segment):
+        return segment.distance_to_plane(self)
+
+    def distance_to_plane(self, plane):
+        normal = self.normal()
+        other_normal = plane.normal()
+        cos_angle = (normal.product_with(other_normal) /
+                     normal.length() /
+                     other_normal.length())
+        # TODO - remove hardcode
+        if abs(abs(cos_angle) - 1) < 0.001:
+            return abs(self.d - plane.d)
+        return 0
+
+    def distance_to_polygon(self, polygon):
+        signum0 = self.get_semispace(polygon.vertices[0])
+        for i in range(1, len(polygon.vertices)):
+            if signum0 * self.get_semispace(polygon.vertices[i]) < 0:
+                return 0
+        return min([vertex.distance_to_plane(self) for vertex in polygon.vertices])
+
+    def distance_to_prism(self, prism):
+        signum0 = self.get_semispace(prism.top_facet.vertices[0])
+        for poly in (prism.top_facet, prism.bot_facet):
+            for vertex in poly.vertices:
+                if signum0 * self.get_semispace(vertex) < 0:
+                    return 0
+        return min(self.distance_to_polygon(prism.top_facet),
+                   self.distance_to_polygon(prism.bot_facet))
